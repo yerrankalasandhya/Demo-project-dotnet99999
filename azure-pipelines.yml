@@ -1,4 +1,4 @@
-# ASP.NET
+
 # Build and test ASP.NET projects.
 # Add steps that publish symbols, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
@@ -43,3 +43,9 @@ steps:
     SlotName: 'production'
     VirtualApplication: 'appservicesforclass444'
     packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'azurecontainerregistry215'
+    repository: 'dotnetproject'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
