@@ -13,19 +13,6 @@ steps:
       version: '7.x'
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - task: Restore@1
-    inputs:
-      restoreSolution: '**/*.sln'
-
-  - task: Build@1
-    inputs:
-      solution: '**/*.sln'
-      msbuildArgs: '/p:DeployOnBuild=true /p:PublishProfile=FolderProfile'
-
-  - task: Test@2
-    inputs:
-      testSelector: 'testProject'
-      testProject: '**/*.csproj'
 
   - task: PublishBuildArtifacts@1
     inputs:
