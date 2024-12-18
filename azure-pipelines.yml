@@ -3,18 +3,43 @@ trigger:
     include:
       - main
 
-pool:
-  vmImage: 'windows-latest'
+variables:
+  buildConfiguration: 'Release'
 
-steps:
-  - task: UseDotNet@2
-    inputs:
-      packageType: 'sdk'
-      version: '7.x'
-      installationPath: $(Agent.ToolsDirectory)/dotnet
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '6.x'
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+    - script: |
+        dotnet build --configuration $(buildConfiguration)
+      displayName: 'Build the project'
 
+- stage: Test
+  jobs:
+  - job: Test
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        dotnet test --configuration $(buildConfiguration)
+      displayName: 'Run Tests'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'drop'
+- stage: Deploy
+  dependsOn: Test
+  condition: succeeded()
+  jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        echo "Deploying the application"
+      displayName: 'Deploy to production'
